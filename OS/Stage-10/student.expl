@@ -1,0 +1,22 @@
+type Student
+{
+        str name;
+        int marks;
+}
+endtype
+int main()
+{
+decl
+Student vipin;
+int temp;
+enddecl
+begin
+	temp = exposcall("Heapset");
+	vipin = exposcall("Alloc", 8);
+	vipin.name = "John";
+	vipin.marks = 89;
+	temp = exposcall("Write", -2, vipin.name);
+	temp = exposcall("Write", -2, vipin.marks);
+	return 0;
+end
+}
