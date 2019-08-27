@@ -1,0 +1,28 @@
+[PROCESS_TABLE + 16 * [SYSTEM_STATUS_TABLE + 1] + 13] = SP;             // Save current SP into UPTR
+SP = [PROCESS_TABLE + 16 * [SYSTEM_STATUS_TABLE + 1] + 11] * 512 - 1;   // set SP to start of Uarea page      
+backup;
+
+alias currentPID R0;
+currentPID = [SYSTEM_STATUS_TABLE + 1];                 // Stores PID of current PROCESS_TABLE
+
+// Set process table values for current process
+
+alias process_table_entry R1;
+process_table_entry = PROCESS_TABLE + 16 * currentPID;
+
+[process_table_entry + 4] = READY;
+alias i R10;
+i=0;
+while( i < 20 )
+do
+[PROCESS_TABLE +16*i] = [PROCESS_TABLE +16*i] + 1;
+i = i+1;
+endwhile;
+call MOD_5;
+restore;
+
+SP = [PROCESS_TABLE + 16 * [SYSTEM_STATUS_TABLE + 1] + 13];
+
+[PROCESS_TABLE + ([SYSTEM_STATUS_TABLE + 1] * 16) + 9 ] = 0;
+
+ireturn;
