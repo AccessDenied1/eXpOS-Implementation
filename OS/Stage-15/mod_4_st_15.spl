@@ -1,0 +1,23 @@
+alias functionNum R1;
+alias currentPID R2;
+
+
+if(functionNum == 3) then
+	multipush(R0,R1,R2,R3,R4);
+	R1 = 8;
+	currentPID = [SYSTEM_STATUS_TABLE + 1];
+	call MOD_0;
+	multipop(R0,R1,R2,R3,R4);
+	print R3;
+
+	//Calling Release Terminal
+	multipush(R0,R1,R2,R3,R4);
+	R1 = 9;
+	alias currnPID R2;
+	currnPID = [SYSTEM_STATUS_TABLE + 1];
+	call MOD_0;
+	multipop(R0,R1,R2,R3,R4);
+	return;
+endif;
+
+return;
