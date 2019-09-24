@@ -1,4 +1,0 @@
-load --module 7  /home/111701030/myexpos/spl/Stage-17/boot_st_17.xsm
-load --int=9  /home/111701030/myexpos/spl/Stage-17/exec_intr_9.xsm
-load --module 1  /home/111701030/myexpos/spl/Stage-17/mod_1.xsm
-load --module 2  /home/111701030/myexpos/spl/Stage-17/mod_2.xsm
