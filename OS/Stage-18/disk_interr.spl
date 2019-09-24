@@ -1,0 +1,25 @@
+[PROCESS_TABLE + 16 * [SYSTEM_STATUS_TABLE + 1] + 13] = SP;             // Save current SP into UPTR
+SP = [PROCESS_TABLE + 16 * [SYSTEM_STATUS_TABLE + 1] + 11] * 512 - 1;   // set SP to start of Uarea page      
+backup;
+
+[DISK_STATUS_TABLE] = 0;
+
+alias currentPid R1;
+currentPid = [SYSTEM_STATUS_TABLE + 1];
+
+alias count R0;
+count = 0;
+while(count<16) do
+	if([PROCESS_TABLE + count*16 +4] == WAIT_DISK) then
+		[PROCESS_TABLE + count*16 +4] = READY;
+	endif;
+	count = count + 1;
+endwhile;
+
+restore;
+
+SP = [PROCESS_TABLE + 16 * [SYSTEM_STATUS_TABLE + 1] + 13];
+
+ireturn;
+
+

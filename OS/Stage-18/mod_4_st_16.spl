@@ -1,0 +1,65 @@
+alias functionNum R1;
+alias currentPID R2;
+
+breakpoint;
+if(functionNum == 3) then
+	multipush(R0,R1,R2,R3,R4);
+	R1 = 8;
+	currentPID = [SYSTEM_STATUS_TABLE + 1];
+	call MOD_0;
+	multipop(R0,R1,R2,R3,R4);
+	print R3;
+
+	//Calling Release Terminal
+	multipush(R0,R1,R2,R3,R4);
+	R1 = 9;
+	alias currnPID R2;
+	currnPID = [SYSTEM_STATUS_TABLE + 1];
+	call MOD_0;
+	multipop(R0,R1,R2,R3,R4);
+	return;
+endif;
+
+if(functionNum == 4) then
+	alias wordAdd R3;
+	multipush(R0,R1,R2,R3,R4);
+	R1 = 8;
+	currentPID = [SYSTEM_STATUS_TABLE + 1];
+	call MOD_0;
+	multipop(R0,R1,R2,R3,R4);
+	read;
+	[PROCESS_TABLE + (currentPID * 16) + 4] = WAIT_TERMINAL;
+
+	multipush(R0,R1,R2,R3,R4);
+	call SCHEDULER;
+	multipop(R0,R1,R2,R3,R4);
+	wordAdd = [PTBR + 2 * (wordAdd / 512)] * 512 + (wordAdd % 512);
+	[wordAdd] = [PROCESS_TABLE + (currentPID * 16) + 8];
+	return;
+endif;
+
+if(functionNum == 2) then
+	alias mem R3;
+	alias block R4;
+	multipush(R0,R1,R2,R3,R4);
+	R1 = 3;
+	R2 = currentPID;
+	call RESOURCE_MANAGER;
+	multipop(R0,R1,R2,R3,R4);
+	[DISK_STATUS_TABLE + 1] = 0;
+	[DISK_STATUS_TABLE + 2] = mem;
+	[DISK_STATUS_TABLE + 3] = block;
+	load(mem , block);
+	[PROCESS_TABLE + currentPID*16 + 4] =  WAIT_DISK;
+	call SCHEDULER;
+	return;
+endif;
+
+	
+	
+	
+	
+	
+	
+
+return;

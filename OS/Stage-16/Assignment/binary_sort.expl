@@ -1,0 +1,76 @@
+decl
+    int a[20];
+    int readI(int n);
+    int sort(int n);
+    int print(int n);
+enddecl
+
+
+int readI(int n)
+{
+	decl
+		int i,temp;
+	enddecl
+	
+	begin
+		temp = exposcall("Write",-2,"Input the array");
+		i=0;
+		while(i<n) do
+			temp = exposcall("Read",-1,a[i]);
+			i=i+1;
+		endwhile;
+		return 0;
+	end
+}
+int sort(int n)
+{
+	decl
+		int i , j , k;
+	enddecl
+	
+	begin
+		i=0;j=0;
+		while(i<(n-1)) do
+			while(j<(n-1-i)) do
+				if(a[j] > a[j+1]) then
+					k=a[j];
+					a[j] = a[j+1];
+					a[j+1] = k;
+				endif;
+				j=j+1;
+			endwhile;
+			i=i+1;
+		endwhile;
+		return 0;
+	end
+}
+int print(int n)
+{
+	decl
+		int i, temp;
+	enddecl
+	begin
+		temp = exposcall("Write",-2,"Sorted array is");
+		i=0;
+		while(i<n) do
+			temp = exposcall("Write",-2,a[i]);
+			i=i+1;
+		endwhile;
+		return 0;
+	end
+}
+int main()
+{
+	decl
+		int n , temp;
+	enddecl
+	
+	begin
+		temp = exposcall("Write",-2,"Enter the size");
+		temp = exposcall("Read",-1,n);
+		temp = readI(n);
+		temp = sort(n);
+		temp = print(n);
+		return 0;
+	end
+}
