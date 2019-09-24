@@ -1,0 +1,56 @@
+loadi(54, 67);                  // Loading module 7: boot module
+loadi(55, 68);
+
+loadi(69, 11);                  // Load idle process
+loadi(70, 12);
+
+SP = 82 * 512 - 1;              // 82: user page area of idle process
+
+call BOOT_MODULE;               // calls boot module (uses idle kernel stack)
+
+
+// Initialize Page Table entry for idle process
+
+PTBR = PAGE_TABLE_BASE;         // Setting up registers execute idle process
+PTLR = 10;
+
+[PTBR + 0] = -1;                // Shared Library
+[PTBR + 1] = "0000";
+[PTBR + 2] = -1;
+[PTBR + 3] = "0000";
+
+[PTBR + 4] = -1;                // Heap
+[PTBR + 5] = "0000";
+[PTBR + 6] = -1;
+[PTBR + 7] = "0000";
+
+[PTBR + 8] = 69;                // Code
+[PTBR + 9] = "0100";
+[PTBR + 10] = 70;
+[PTBR + 11] = "0100";
+[PTBR + 12] = -1;
+[PTBR + 13] = "0000";
+[PTBR + 14] = -1;
+[PTBR + 15] = "0000";
+
+[PTBR + 16] = 81;               // Stack
+[PTBR + 17] = "0110";
+[PTBR + 18] = -1;
+[PTBR + 19] = "0000";
+
+
+[PROCESS_TABLE + 1] = 0;        // PID
+[PROCESS_TABLE + 13] = 8 * 512; // User stack pointer
+[PROCESS_TABLE + 12] = 0;       // Kernel stack pointer offset
+[PROCESS_TABLE + 14] = PTBR;    // PTBR for idle
+[PROCESS_TABLE + 15] = PTLR;    // PTLR for idle
+[PROCESS_TABLE + 11] = 82;      // User page area
+[PROCESS_TABLE + 4] = RUNNING;  // State of idle
+
+[SYSTEM_STATUS_TABLE + 1] = 0;  // Idle process would be running first
+
+[81 * 512] = [69 * 512 + 1];    // Entry point value taken from header of idle placed on top of the user stack
+
+SP = 8 * 512;                   // Initialize SP with current top of the user stack of idle process
+
+ireturn;

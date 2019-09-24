@@ -1,0 +1,24 @@
+alias functionNum R1;
+alias currentPID R2;                // current PID
+alias word R3;
+
+if(functionNum != 3) then           // If function called was not the write function (3), then return
+    return;
+endif;
+
+// Calling Acquire Terminal
+multipush(R1, R2, R3);              // Push all registers used
+R1 = 8;                             // Acquire Terminal function number, R2 contains current PID
+call RESOURCE_MANAGER;              // Call Resource Manager, ignore return value (in R0)
+multipop(R1, R2, R3);               // Pop all used registers
+
+print(word);                        // print the word
+
+// Calling Release Terminal
+multipush(R1, R2, R3);              // Push all registers used
+R1 = 9;                             // Release Terminal function number, R2 contains current PID
+call RESOURCE_MANAGER;              // Call Resource Manager
+alias ret_val R0;                   // We may use the return value store in R0 (imp)
+multipop(R1, R2, R3);               // Pop all used registers
+
+return;

@@ -1,0 +1,25 @@
+breakpoint;
+[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1] * 16 + 13] = SP;             // Save user stack pointer
+SP = [PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1] * 16 + 11] * 512 - 1;   // and switch to kernel stack
+
+backup;                             // Backup user context
+
+[DISK_STATUS_TABLE + 0] = 0;        // Disk is no longer busy
+breakpoint;
+alias i R1;
+i = 0;
+
+while(i < MAX_PROC_NUM) do          // Set the states of all the processes waiting for disk to READY
+
+    if([PROCESS_TABLE + i * 16 + 4] == WAIT_DISK) then
+        [PROCESS_TABLE + i * 16 + 4] = READY;
+    endif;
+    
+    i = i + 1;
+endwhile;
+
+restore;                            // Restore user context
+
+SP = [PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1] * 16 + 13];             // Switch back to user stack
+breakpoint;
+ireturn;

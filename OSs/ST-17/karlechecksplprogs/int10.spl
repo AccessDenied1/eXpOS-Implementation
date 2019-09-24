@@ -1,0 +1,18 @@
+alias currentPID R0;
+currentPID = [SYSTEM_STATUS_TABLE + 1];
+
+[PROCESS_TABLE + 16 * currentPID + 4] = TERMINATED;
+
+alias newPID R1;
+newPID = (currentPID % 15) + 1;
+
+while((newPID != currentPID) && ([PROCESS_TABLE + 16 * newPID + 4] == TERMINATED)) do       // iterate to find new PID
+    newPID = (newPID % 15) + 1;
+endwhile;
+
+if(newPID == currentPID) then
+    halt;
+endif;
+
+// If any process other than idle is not TERMINATED, then schedule it
+call SCHEDULER;

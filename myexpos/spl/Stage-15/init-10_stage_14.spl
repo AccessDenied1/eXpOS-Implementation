@@ -1,0 +1,15 @@
+alias currentPID R0;
+currentPID = [SYSTEM_STATUS_TABLE + 1];
+
+alias process_table_entry R1;
+process_table_entry = PROCESS_TABLE + 16 * currentPID;
+
+[process_table_entry + 4] = TERMINATED;
+
+
+if([PROCESS_TABLE + 16 + 4] == TERMINATED && [PROCESS_TABLE + 32 + 4] == TERMINATED && [PROCESS_TABLE + 48 + 4] == TERMINATED )
+then
+	halt;
+endif;
+
+call MOD_5;

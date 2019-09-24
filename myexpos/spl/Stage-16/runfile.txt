@@ -1,0 +1,15 @@
+load --init /home/111701030/myexpos/spl/Stage-16/GCD.xsm
+load --int=console /home/111701030/myexpos/spl/Stage-16/console_inter.xsm
+load --int=6 /home/111701030/myexpos/spl/Stage-16/inter_6.xsm
+load --module 7  /home/111701030/myexpos/spl/Stage-16/boot_st_16.xsm
+load --idle /home/111701030/myexpos/spl/Stage-15/idle.xsm
+load --library /home/111701030/myexpos/expl/library.lib
+load --int=7 /home/111701030/myexpos/spl/Stage-15/int_7_stage_15.xsm
+load --module 4 /home/111701030/myexpos/spl/Stage-16/mod_4_st_16.xsm
+load --module 0 /home/111701030/myexpos/spl/Stage-15/mod_0_st_15.xsm
+load --int=10 /home/111701030/myexpos/spl/Stage-15/init-10_stage_14.xsm
+load --int=timer /home/111701030/myexpos/spl/Stage-15/timer_stage_14.xsm
+load --exhandler /home/111701030/myexpos/spl/Stage-15/haltprog.xsm
+load --module 5 /home/111701030/myexpos/spl/Stage-15/mod_5.xsm
+load --os /home/111701030/myexpos/spl/Stage-15/os_start_new.xsm
+load --module 5 /home/111701030/myexpos/spl/Stage-16/scheduler_module.xsm

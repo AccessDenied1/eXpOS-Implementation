@@ -1,0 +1,33 @@
+[PROCESS_TABLE + 16 * [SYSTEM_STATUS_TABLE + 1] + 9] = 5;                           // Setting mode flag to write function call number
+
+alias userSP R0;                                                                    // Save user stack pointer in userSP
+userSP = SP;
+
+[PROCESS_TABLE + 16 * [SYSTEM_STATUS_TABLE + 1] + 13] = SP;                         // Switching to kernel stack, Saving user stack pointer
+SP = [PROCESS_TABLE + 16 * [SYSTEM_STATUS_TABLE + 1] + 11] * 512 - 1;               // and placing Kernel stack pointer in SP
+
+alias fileDescriptor R1;
+fileDescriptor = [[PTBR + 2 * ((userSP - 4) / 512)] * 512 + ((userSP - 4) % 512)];  // Get argument 1 (fd)
+
+if(fileDescriptor != -2) then
+    [[PTBR + 2 * ((userSP - 1) / 512)] * 512 + ((userSP - 1) % 512)] = -1;          // Set return value to -1
+else
+    alias word R2;
+    word = [[PTBR + 2 * ((userSP - 3) / 512)] * 512 + ((userSP - 3) % 512)];        // Get argument 2 (word)
+
+    
+    R3 = word;                                                                      // Word to be printed
+    multipush(R0, R1, R2);
+    R1 = 3;                                                                         // Function number for terminal write
+    R2 = [SYSTEM_STATUS_TABLE + 1];                                                 // PID of current process
+    
+    call DEVICE_MANAGER;                                                            // Call device manager with arguments, we ignore return value (R0)
+
+    multipop(R0, R1, R2);                                                           // order of pop is reverse of the arguments specified
+
+endif;
+
+SP = userSP;
+
+[PROCESS_TABLE + 16 * [SYSTEM_STATUS_TABLE + 1] + 9] = 0;                           // set mode flag for user mode
+ireturn;

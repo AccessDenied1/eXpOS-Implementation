@@ -1,0 +1,17 @@
+load --init ../expl/samples/stage17/shell_version.xsm
+load --idle ../expl/samples/stage17/idle.xsm
+load --int=6 ../spl/spl_progs/stage17/int6.xsm
+load --int=7 ../spl/spl_progs/stage17/int7.xsm
+load --int=10 ../spl/spl_progs/stage17/int10.xsm
+load --int=timer ../spl/spl_progs/stage17/timer_int.xsm
+load --module 7 ../spl/spl_progs/stage17/bootmodule.xsm
+load --module 0 ../spl/spl_progs/stage17/resource_manager.xsm
+load --module 4 ../spl/spl_progs/stage17/device_manager.xsm
+load --module 5 ../spl/spl_progs/stage17/scheduler.xsm
+load --exhandler ../spl/spl_progs/haltprog.xsm
+load --library ../expl/library.lib
+load --int=console ../spl/spl_progs/stage17/console_int.xsm
+load --os ../spl/spl_progs/stage17/os_startup.xsm
+load --int=9 ../spl/spl_progs/stage17/int9.xsm
+load --module 1 ../spl/spl_progs/stage17/process_manager.xsm
+load --module 2 ../spl/spl_progs/stage17/memory_manager.xsm

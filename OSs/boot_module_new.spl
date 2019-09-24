@@ -1,0 +1,171 @@
+loadi(50, 63);                      // Loading module 5: Scheduler
+loadi(51, 64);
+
+loadi(16, 29);                      // Load int 7 handler
+loadi(17, 30);
+
+loadi(4, 17);                       // Load timer interrupt handler
+loadi(5, 18);
+
+loadi(22, 35);                      // Load int 10 handler
+loadi(23, 36);
+
+loadi(2, 15);                       // Load exception handler
+loadi(3, 16);
+
+loadi(63, 13);                      // Load shared library
+loadi(64, 14);
+
+loadi(65, 7);                       // Load INIT
+loadi(66, 8);
+
+loadi(83, 69);                      // Load second process
+
+loadi(89, 70);                      // Load third process
+
+loadi(40, 53);                      // Load module 0: Resource Manager
+loadi(41, 54);
+
+loadi(48, 61);                      // Load module 4: Device Manager
+loadi(49, 62);
+
+
+
+alias page_table R0;
+alias process_table R1;
+
+// Setting up Page Table of INIT
+
+page_table = PAGE_TABLE_BASE + 20;
+
+[page_table + 0] = 63;              // Shared Library
+[page_table + 1] = "0100";
+[page_table + 2] = 64;
+[page_table + 3] = "0100";
+
+[page_table + 4] = 78;              // Heap
+[page_table + 5] = "0110";
+[page_table + 6] = 79;
+[page_table + 7] = "0110";
+
+[page_table + 8] = 65;              // Code
+[page_table + 9] = "0100";
+[page_table + 10] = 66;
+[page_table + 11] = "0100";
+[page_table + 12] = -1;
+[page_table + 13] = "0000";
+[page_table + 14] = -1;
+[page_table + 15] = "0000";
+
+[page_table + 16] = 76;             // Stack
+[page_table + 17] = "0110";
+[page_table + 18] = 77;
+[page_table + 19] = "0110";
+
+// Setting up process table entry of INIT
+
+process_table = PROCESS_TABLE + 16;
+
+[process_table + 1] = 1;            // PID
+[process_table + 13] = 8 * 512;     // User stack pointer
+[process_table + 12] = 0;           // Kernel stack pointer offset
+[process_table + 14] = page_table;  // PTBR of INIT
+[process_table + 15] = 10;          // PTLR of INIT
+[process_table + 11] = 80;          // User page area of INIT
+[process_table + 4] = CREATED;      // State of INIT
+
+[76 * 512] = [65 * 512 + 1];        // Placing entry point of code at the top of the user Stack
+
+// Setting up Page Table of Second process
+
+page_table = PAGE_TABLE_BASE + 40;
+
+[page_table + 0] = 63;              // Shared Library
+[page_table + 1] = "0100";
+[page_table + 2] = 64;
+[page_table + 3] = "0100";
+
+[page_table + 4] = 84;              // Heap
+[page_table + 5] = "0110";
+[page_table + 6] = 85;
+[page_table + 7] = "0110";
+
+[page_table + 8] = 83;              //  Code
+[page_table + 9] = "0100";
+[page_table + 10] = -1;
+[page_table + 11] = "0000";
+[page_table + 12] = -1;
+[page_table + 13] = "0000";
+[page_table + 14] = -1;
+[page_table + 15] = "0000";
+
+[page_table + 16] = 86;             // Stack
+[page_table + 17] = "0110";
+[page_table + 18] = 87;
+[page_table + 19] = "0110";
+
+// Setting up Process Table entry of second process
+
+process_table = PROCESS_TABLE + 32;
+
+[process_table + 1] = 2;            // PID
+[process_table + 13] = 8 * 512;     // User stack pointer
+[process_table + 12] = 0;           // Kernel stack pointer offset
+[process_table + 14] = page_table;  // PTBR
+[process_table + 15] = 10;          // PTLR
+[process_table + 11] = 88;          // User page area
+[process_table + 4] = CREATED;      // State
+
+[86 * 512] = [83 * 512 + 1];        // Placing entry point at the top of the user Stack
+
+// Setting up the Page Table of third process
+
+page_table = PAGE_TABLE_BASE + 60;
+
+[page_table + 0] = 63;				// Shared Library
+[page_table + 1] = "0100";
+[page_table + 2] = 64;
+[page_table + 3] = "0100";
+
+[page_table + 4] = 90;				// Heap
+[page_table + 5] = "0110";
+[page_table + 6] = 91;
+[page_table + 7] = "0110";
+
+[page_table + 8] = 89;				// Code
+[page_table + 9] = "0100";
+[page_table + 10] = -1;
+[page_table + 11] = "0000";
+[page_table + 12] = -1;
+[page_table + 13] = "0000";
+[page_table + 14] = -1;
+[page_table + 15] = "0000";
+
+[page_table + 16] = 92;				// Stack
+[page_table + 17] = "0110";
+[page_table + 18] = 93;
+[page_table + 19] = "0110";
+
+// Setting up the process table of third process
+
+process_table = PROCESS_TABLE + 48;
+
+[process_table + 1] = 3;			// PID
+[process_table + 13] = 8 * 512;		// UPTR
+[process_table + 12] = 0;			// KPTR
+[process_table + 14] = page_table;	// PTBR
+[process_table + 15] = 10;			// PTLR
+[process_table + 11] = 94;			// User Page Area
+[process_table + 4] = CREATED;		// State
+
+[92 * 512] = [89 * 512 + 1];		// Placing entry point at the top of the stack
+
+alias proc R2;
+proc = 4;
+
+while(proc < 16) do                 // Set state of all other processes to TERMINATED
+    [PROCESS_TABLE + 16 * proc + 4] = TERMINATED;
+    proc = proc + 1;
+endwhile;
+
+return;

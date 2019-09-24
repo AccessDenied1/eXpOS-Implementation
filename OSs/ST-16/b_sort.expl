@@ -1,0 +1,78 @@
+decl
+    int a[20];
+    int readInput(int n);
+    int bubbleSort(int n);
+    int printOutput(int n);
+enddecl
+
+int readInput(int n)
+{
+    decl
+        int i, temp;
+    enddecl
+
+    begin
+        i = 0;
+        while(i < n) do
+            temp = exposcall("Read", -1, a[i]);
+            i = i + 1;
+        endwhile;
+        return 0;
+    end
+}
+
+int bubbleSort(int n)
+{
+    decl
+        int i, j, t;
+    enddecl
+
+    begin
+        i = 0;
+        while(i < (n - 1)) do
+            j = 0;
+            while(j < (n - i - 1)) do
+                if(a[j] > a[j + 1]) then
+                    t = a[j];
+                    a[j] = a[j + 1];
+                    a[j + 1] = t;
+                endif;
+                j = j + 1;
+            endwhile;
+            i = i + 1;
+        endwhile;
+        return 0;
+    end
+}
+
+int printOutput(int n)
+{
+    decl
+        int i, temp;
+    enddecl
+
+    begin
+        i = 0;
+        temp = exposcall("Write", -2, "Sorted");
+        while(i < n) do
+            temp = exposcall("Write", -2, a[i]);
+            i = i + 1;
+        endwhile;
+        return 0;
+    end
+}
+
+int main()
+{
+    decl
+        int n, temp;
+    enddecl
+
+    begin
+        temp = exposcall("Read", -1, n);
+        temp = readInput(n);
+        temp = bubbleSort(n);
+        temp = printOutput(n);
+        return 0;
+    end
+}

@@ -1,0 +1,51 @@
+//breakpoint;
+alias currentPID R0;
+currentPID = [SYSTEM_STATUS_TABLE + 1];
+SP = SP+1;
+[SP] = BP;
+
+alias process_table_entry R1;
+process_table_entry = PROCESS_TABLE + 16 * currentPID;
+
+
+[process_table_entry + 12] = SP % 512;                  // offset of kernel stack pointer
+[process_table_entry + 14] = PTBR;                      // current PTBR 
+[process_table_entry + 15] = PTLR;
+
+alias pid R2;
+alias new_pid R3;
+pid = (currentPID % 15) + 1;
+while(pid != currentPID) do
+	if([PROCESS_TABLE +(pid*16) + 4] == READY || [PROCESS_TABLE +(pid*16)+ 4] == CREATED) then
+		new_pid = pid;
+		break;
+	else
+		new_pid = 0;
+	endif;
+	pid = (pid%15)+1;
+endwhile;
+
+alias new_process_table R4;
+
+new_process_table = PROCESS_TABLE + (16*new_pid);
+
+SP = [new_process_table + 11]*512 + [new_process_table + 12];
+
+PTBR = [new_process_table + 14];
+PTLR = [new_process_table + 15];
+
+[SYSTEM_STATUS_TABLE + 1] = new_pid;
+
+if([new_process_table + 4] == CREATED) then
+    [new_process_table + 4] = RUNNING;
+    [new_process_table + 9] = 0;
+    SP = [new_process_table + 13];
+    ireturn;
+endif;
+
+[new_process_table + 4] = RUNNING;
+
+BP = [SP];
+SP = SP -1;
+//breakpoint;
+return;

@@ -1,0 +1,3 @@
+load --module 4 /home/111701030/myexpos/spl/spl_progs/mod_4_st_15.xsm
+load --module 0 /home/111701030/myexpos/spl/spl_progs/mod_0_st_15.xsm
+load --int=7 /home/111701030/myexpos/spl/spl_progs/int_7_stage_15.spl

@@ -1,0 +1,43 @@
+alias functionNum R1;
+alias currentPID R2;
+
+if(functionNum == 8) then
+    while([TERMINAL_STATUS_TABLE] == 1) do                          // Until the terminal is released, make this process wait in a loop
+
+        [PROCESS_TABLE + 16 * currentPID + 4] = WAIT_TERMINAL;      // Set state of this process to WAIT_TERMINAL
+        multipush(R1, R2);                                          // Push all registers used
+        call SCHEDULER;                                             // Call scheduler to schedule another process
+        multipop(R1, R2);                                           // Pop all registers saved
+
+    endwhile;
+
+    [TERMINAL_STATUS_TABLE] = 1;
+    [TERMINAL_STATUS_TABLE + 1] = currentPID;
+    return;
+endif;
+
+if(functionNum == 9) then
+    if(currentPID != [TERMINAL_STATUS_TABLE + 1]) then              // If the process which has not acquired the 
+        R0 = -1;                                                    // terminal is trying to release it then return -1
+        return;
+    endif;
+
+    [TERMINAL_STATUS_TABLE] = 0;                                    // Terminal is now released
+
+    alias i R3;
+    i = 1;
+    while(i < 16) do
+
+        if([PROCESS_TABLE + 16 * i + 4] == WAIT_TERMINAL) then      // Make all process waiting for terminal to ready
+            [PROCESS_TABLE + 16 * i + 4] = READY;
+        endif;
+        
+        i = i + 1;
+    endwhile;
+
+    R0 = 0;                                                         // This return value indicates success
+    return;
+endif;
+
+R0 = -1;                                                            // Function number is other than 8 or 9
+return;
