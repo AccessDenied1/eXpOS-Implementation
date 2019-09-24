@@ -1,0 +1,30 @@
+// Very important: Process which is holding the terminal is 
+// different from the process through which we have entered
+// this console interrupt handler.
+// Both have different PIDs
+
+
+[PROCESS_TABLE + 16 * [SYSTEM_STATUS_TABLE + 1] + 13] = SP;             // Save user SP into UTPR
+SP = [PROCESS_TABLE + 16 * [SYSTEM_STATUS_TABLE + 1] + 11] * 512 - 1;   // Switch to kernel stack
+
+backup;                                                                 // Backup the user context (since this interrupt was not called by the process)
+
+alias reqPID R0;                                                        // PID of the process that had acquired the terminal for console read
+reqPID = [TERMINAL_STATUS_TABLE + 1];                                   // Get it from the terminal status table
+
+alias process_table R1;                                                 // Stores process table entry corresponding to reqPID
+process_table = PROCESS_TABLE + 16 * reqPID;
+
+[process_table + 8] = P0;                                               // Store the input saved in port P0 to the input buffer in the process table of reqPID process
+
+// Releasing the terminal
+R2 = reqPID;                                                            // Store PID of the process currently holding the terminal
+multipush(R0, R1);                                                      // Push all registers used
+R1 = 9;                                                                 // Set function number for release terminal
+call RESOURCE_MANAGER;                                                  // Call Resource Manager module, ignore the return value
+multipop(R0, R1);                                                       // Pop all registers used
+
+restore;                                                                // Restore all user registers
+
+SP = [PROCESS_TABLE + 16 * [SYSTEM_STATUS_TABLE + 1] + 13];             // Switch back to the process which was currently running
+ireturn;

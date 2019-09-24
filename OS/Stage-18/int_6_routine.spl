@@ -1,0 +1,31 @@
+[PROCESS_TABLE + 16 * [SYSTEM_STATUS_TABLE + 1] + 9] = 7;                           // System call number for read
+
+alias userSP R0;                                                                    // This would store the user SP
+userSP = SP;
+
+[PROCESS_TABLE + 16 * [SYSTEM_STATUS_TABLE + 1] + 13] = SP;                         // Save user SP into UPTR
+SP = [PROCESS_TABLE + 16 * [SYSTEM_STATUS_TABLE + 1] + 11] * 512 - 1;               // and then switch to kernel stack
+
+alias fileDescriptor R1;
+fileDescriptor = [[PTBR + 2 * ((userSP - 4) / 512)] * 512 + ((userSP - 4) % 512)];  // Get argument 1 (fd)
+
+if(fileDescriptor != -1) then                                                       // If fd is not -1, then set return val to -1
+    [[PTBR + 2 * ((userSP - 1) / 512)] * 512 + ((userSP - 1) % 512)] = -1;
+else
+    alias wordAddr R2;
+    wordAddr = [[PTBR + 2 * ((userSP - 3) / 512)] * 512 + ((userSP - 3) % 512)];    // Get argument 2 (word address)
+
+    R3 = wordAddr;                                                                  // R3 would hold the word address
+    multipush(R0, R1, R2);                                                          // Push all registers used until now
+    R1 = 4;                                                                         // R1 would hold the Terminal Read function number
+    R2 = [SYSTEM_STATUS_TABLE + 1];                                                 // R2 would hold the Current PID
+    call DEVICE_MANAGER;                                                            // Call the Device Manager module
+    multipop(R0, R1, R2);                                                           // Get back all registers that were used
+    
+    [[PTBR + 2 * ((userSP - 1) / 512)] * 512 + ((userSP - 1) % 512)] = 0;           // Return value set to 0, indicating success
+endif;
+
+[PROCESS_TABLE + 16 * [SYSTEM_STATUS_TABLE + 1] + 9] = 0;                           // Mode flag set to 0, indicates user mode
+SP = userSP;                                                                        // Get back user SP
+
+ireturn;

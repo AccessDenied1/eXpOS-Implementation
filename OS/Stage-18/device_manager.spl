@@ -1,0 +1,77 @@
+alias functionNum R1;                   // Function number
+alias currentPID R2;                    // current PID
+
+if(functionNum == 2) then               // If Disk Load function is called, then proceed
+
+    alias memPage R3;                   // Memory page and disk block numbers were passed as arguments
+    alias diskBlock R4;
+
+    multipush(R1, R2, R3, R4);          // Push all registers used
+    R1 = 3;                             // Call Acquire Disk function in the resource manager
+    call RESOURCE_MANAGER;              // R2 already contains the PID passed
+    multipop(R1, R2, R3, R4);           // Pop all registers used
+
+    [DISK_STATUS_TABLE + 1] = 0;        // Load/Store bit set to Load (i.e. value 0)
+    [DISK_STATUS_TABLE + 2] = memPage;  // Set memory page involved in the transfer
+    [DISK_STATUS_TABLE + 3] = diskBlock;// Set disk block involved in the transfer
+
+    load(memPage, diskBlock);           // Load disk block to memory page
+
+    [PROCESS_TABLE + 16 * currentPID + 4] = WAIT_DISK;                      // Set state to WAIT_DISK
+
+    call SCHEDULER;                     // call scheduler to schedule another process
+
+    return;
+endif;
+
+
+if(functionNum == 3) then               // If Terminal Write function is called, then proceed
+
+    alias word R3;                      // Stores word to be printed
+
+    // Calling Acquire Terminal
+    multipush(R1, R2, R3);              // Push all registers used
+    R1 = 8;                             // Acquire Terminal function number, R2 contains current PID
+    call RESOURCE_MANAGER;              // Call Resource Manager, ignore return value (in R0)
+    multipop(R1, R2, R3);               // Pop all used registers
+
+    print(word);                        // print the word
+
+    // Calling Release Terminal
+    multipush(R1, R2, R3);              // Push all registers used
+    R1 = 9;                             // Release Terminal function number, R2 contains current PID
+    call RESOURCE_MANAGER;              // Call Resource Manager
+    alias ret_val R0;                   // We may use the return value store in R0 (imp)
+    multipop(R1, R2, R3);               // Pop all used registers
+
+    return;
+endif;
+
+if(functionNum == 4) then               // If Terminal Read function is called then proceed
+
+    alias wordAddr R3;                  // Stores address of where to store the word inputted
+
+    // Calling Acquire Terminal
+    multipush(R1, R2, R3);              // Push all registers used
+    R1 = 8;                             // Acquire Terminal function number, R2 contains current PID
+    call RESOURCE_MANAGER;              // Call Resource Manager, ignore return value (in R0)
+    multipop(R1, R2, R3);               // Pop all used registers
+
+    read;                               // Request to read from the Terminal
+
+    [PROCESS_TABLE + 16 * currentPID + 4] = WAIT_TERMINAL;                  // Set state to WAIT_TERMINAL
+
+    // Invoke context switching module
+    multipush(R1, R2, R3);
+    call SCHEDULER; 
+    multipop(R1, R2, R3);
+
+    wordAddr = [PTBR + 2 * (wordAddr / 512)] * 512 + (wordAddr % 512);      // Convert logical word address to physical address
+    [wordAddr] = [PROCESS_TABLE + 16 * currentPID + 8];                     // Store the value present in input buffer to the address specified by wordAddr (already converted to physical)
+    
+    return;
+endif;
+
+
+// Function was not among 3 or 4
+return;

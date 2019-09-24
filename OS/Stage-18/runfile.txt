@@ -1,0 +1,20 @@
+load --module 7 /home/111701030/expos/OS/ST-18/boot_module.xsm
+load --int=console /home/111701030/expos/OS/ST-18/console_int.xsm
+load --module 4 /home/111701030/expos/OS/ST-18/device_manager.xsm
+load --int=disk /home/111701030/expos/OS/ST-18/disk_int.xsm
+load --exhandler /home/111701030/expos/OS/ST-18/haltprog.xsm
+load --int=6 /home/111701030/expos/OS/ST-18/int_6_routine.xsm
+load --int=7 /home/111701030/expos/OS/ST-18/int_7_routine.xsm
+load --int=9 /home/111701030/expos/OS/ST-18/int_9_routine.xsm
+load --int=10 /home/111701030/expos/OS/ST-18/int_10_routine.xsm
+load --module 2 /home/111701030/expos/OS/ST-18/memory_manager.xsm
+load --os /home/111701030/expos/OS/ST-18/os_startup.xsm
+load --module 1 /home/111701030/expos/OS/ST-18/process_manager.xsm
+load --module 0 /home/111701030/expos/OS/ST-18/resource_manager.xsm
+load --module 5 /home/111701030/expos/OS/ST-18/scheduler_module.xsm
+load --int=timer /home/111701030/expos/OS/ST-18/timer_int.xsm
+load --library /home/111701030/expos/myexpos/expl/library.lib
+load --init /home/111701030/expos/myexpos/expl/samples/odd.xsm
+load --idle /home/111701030/expos/myexpos/spl/Stage-15/idle.xsm
+load --int=disk /home/111701030/expos/OS/ST-18/disk_int.xsm
+

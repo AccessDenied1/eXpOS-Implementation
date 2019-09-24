@@ -1,0 +1,62 @@
+alias funcNum R1;
+
+if(funcNum == 1) then                                           // Get Free Page function
+
+    [SYSTEM_STATUS_TABLE + 3] = [SYSTEM_STATUS_TABLE + 3] + 1;  // Increment WAIT_MEM_COUNT
+
+    while([SYSTEM_STATUS_TABLE + 2] == 0) do                    // Busy Loop
+
+        [PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1] * 16 + 4] = WAIT_MEM;    // Process is waiting for memory
+        multipush(R1);
+        call SCHEDULER;
+        multipop(R1);
+    
+    endwhile;
+
+    [SYSTEM_STATUS_TABLE + 3] = [SYSTEM_STATUS_TABLE + 3] - 1;  // Decrement WAIT_MEM_COUNT
+    [SYSTEM_STATUS_TABLE + 2] = [SYSTEM_STATUS_TABLE + 2] - 1;  // Decrement MEM_FREE_COUNT
+
+    alias i R2;
+    i = 76;                                                     // Memory pages allowed for user programs: 76 - 127
+
+    while(i <= 127) do                                          // Search the memory free list for a free page
+
+        if([MEMORY_FREE_LIST + i] == 0) then
+
+            [MEMORY_FREE_LIST + i] = 1;                         // Set corresponding memory free list entry to 1         
+            R0 = i;                                             // Store page number in R0
+            break;
+
+        endif;
+
+        i = i + 1;
+    
+    endwhile;
+    return;
+
+endif;
+
+if(funcNum == 2) then                                           // Release Page function
+
+    alias pageNum R2;
+
+    [MEMORY_FREE_LIST + pageNum] = [MEMORY_FREE_LIST + pageNum] - 1;    // Decrement corresponding entry in memory free list
+
+    if([MEMORY_FREE_LIST + pageNum] == 0) then
+        [SYSTEM_STATUS_TABLE + 2] = [SYSTEM_STATUS_TABLE + 2] + 1;      // If this page is no longer used, then increment the number of free pages
+    endif;
+
+    alias i R3;
+    i = 0;
+
+    while(i < MAX_PROC_NUM) do                                  // Update the states of all those processes which are in WAIT_MEM state
+
+        if([PROCESS_TABLE + i * 16 + 4] == WAIT_MEM) then
+            [PROCESS_TABLE + i * 16 + 4] = READY;
+        endif;
+        
+        i = i + 1;
+    endwhile;
+    return;
+
+endif;
