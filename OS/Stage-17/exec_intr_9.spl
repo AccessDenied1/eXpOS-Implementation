@@ -104,7 +104,7 @@ counter = 0;
 while(counter < 4) do
 
     if([INODE_TABLE + inode_index * 16 + (counter + 8)] != -1) then
-        loadi([page_table + 8 + 2 * counter], [INODE_TABLE + inode_index * 16 + 8]);
+        loadi([page_table + 8 + 2 * counter], [INODE_TABLE + inode_index * 16 + 8 + counter]);
     endif;
     counter = counter + 1;
 
