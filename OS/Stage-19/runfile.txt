@@ -1,0 +1,6 @@
+load --module 7 /home/111701030/OS_my/ST-19/boot_module.xsm
+load --exhandler /home/111701030/OS_my/ST-19/exhandler.xsm
+load --int=9 /home/111701030/OS_my/ST-19/int_9_routine.xsm
+load --module 2 /home/111701030/OS_my/ST-19/memory_manager.xsm
+load --module 1 /home/111701030/OS_my/ST-19/process_manager.xsm
+

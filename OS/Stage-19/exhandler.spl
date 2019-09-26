@@ -1,0 +1,75 @@
+[PROCESS_TABLE + [SYSTEM_STATUS_TABLE+1]*16 + 9] = -1;
+
+[PROCESS_TABLE + [SYSTEM_STATUS_TABLE+1]*16 + 13] = SP;
+
+SP = [PROCESS_TABLE + [SYSTEM_STATUS_TABLE+1]*16 + 11]*512 -1;
+
+backup;
+
+multipush(EIP);
+
+alias userSP R0;
+
+userSP = [PROCESS_TABLE + [SYSTEM_STATUS_TABLE+1]*16 + 13];
+
+if((EC!=0) || (userSP == PTLR*512-1)) then
+	if(userSP == (PTLR*512-1)) then
+		print("stack full");
+	endif;
+	if(EC == 1) then
+		print("Ilgl Instr");
+	endif;
+	if(EC == 2) then
+		print("Ilg Mem Acs");
+	endif;
+	if(EC == 3) then
+		print("Div Zero");
+	endif;
+
+	multipush(R0);
+	R1 = 3;
+	R2 = [SYSTEM_STATUS_TABLE+1];
+	call PROCESS_MANAGER;
+	multipop(R0);
+	call SCHEDULER;
+	return;
+endif;
+
+if(EPN>=4 && EPN<=7) then
+
+	alias code_block R1;
+	code_block = [DISK_MAP_TABLE + 10*[SYSTEM_STATUS_TABLE + 1] + (EPN-4) + 4];
+	R2 = code_block;
+	multipush(R0,R1);
+	R1 = 5;
+	call MEMORY_MANAGER;
+	[PTBR + 2*EPN] = R0;
+	[PTBR + 2*EPN +1] ="1100";
+	multipop(R0,R1);
+endif;
+
+if(EPN>=2 && EPN<=3) then
+	
+	multipush(R0,R1);
+	R1 = 1;
+	call MEMORY_MANAGER;
+	R2 = R0;
+	[PTBR+4] = R2;
+	[PTBR+5] = "1110";
+	call MEMORY_MANAGER;
+	R2 = R0;
+	[PTBR+6] = R2;
+	[PTBR+7] = "1110";
+	multipop(R0,R1);
+endif;
+
+[PROCESS_TABLE + [SYSTEM_STATUS_TABLE+1]*16 + 9] = 0;
+multipop(EIP);
+restore;
+
+SP = [PROCESS_TABLE + [SYSTEM_STATUS_TABLE+1]*16 + 13];
+SP = SP+1;
+
+[[PTBR+2*(SP/512)]*512+(SP%512)] = EIP; 
+
+ireturn;
