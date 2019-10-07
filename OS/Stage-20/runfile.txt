@@ -1,0 +1,4 @@
+load --int=10 /home/111701030/OS_my/Stage-20/int-10.xsm
+load --int=8 /home/111701030/OS_my/Stage-20/int_8.xsm
+load --module 5 /home/111701030/OS_my/Stage-20/scheduler_module.xsm
+load --module 1 /home/111701030/OS_my/Stage-20/process_manager.xsm
