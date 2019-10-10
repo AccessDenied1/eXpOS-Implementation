@@ -1,7 +1,6 @@
 //breakpoint;
 alias currentPID R0;
 currentPID = [SYSTEM_STATUS_TABLE + 1];
-//[PROCESS_TABLE + (16*currentPID) + 12] = BP; ///CONFUSION
 SP = SP+1;
 [SP] = BP;
 
