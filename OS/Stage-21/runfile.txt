@@ -1,0 +1,6 @@
+load --module 7 /home/111701030/OS_my/Stage-21/boot_module.xsm
+load --int=11 /home/111701030/OS_my/Stage-21/int_11.xsm
+load --int=15 /home/111701030/OS_my/Stage-21/int_15_shutdown.xsm
+load --module 1 /home/111701030/OS_my/Stage-21/process_manager.xsm
+load --init /home/111701030/OS_my/Stage-21/test_program_1.xsm
+
