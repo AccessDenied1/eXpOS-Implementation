@@ -29,8 +29,9 @@ int sort(int n)
 	enddecl
 	
 	begin
-		i=0;j=0;
+		i=0;
 		while(i<(n-1)) do
+		j=0;
 			while(j<(n-1-i)) do
 				if(a[j] > a[j+1]) then
 					k=a[j];
